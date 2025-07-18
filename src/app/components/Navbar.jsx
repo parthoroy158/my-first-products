@@ -2,6 +2,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { BsCart3 } from "react-icons/bs";
+import Image from 'next/image';
+import imageLogo from '../../../public/logo sticker (1).png'
 
 const Navbar = () => {
     const pathname = usePathname();
@@ -33,7 +36,7 @@ const Navbar = () => {
                         </label>
                         <ul
                             tabIndex={0}
-                            className="menu menu-sm dropdown-content min-h-screen mt-3 p-2 shadow bg-base-100 dark:bg-white rounded-box w-52 z-[999]"
+                            className="menu menu-md dropdown-content mt-3 p-2 shadow bg-base-100 dark:bg-white rounded-box w-50 z-[999]"
                         >
                             <li>
                                 <Link href="/" legacyBehavior>
@@ -68,13 +71,17 @@ const Navbar = () => {
                             </li>
                             <li>
                                 <Link href="/aboutUs" legacyBehavior>
-                                    <a className={isActive('/about') ? 'text-primary font-bold' : ''}>About Us</a>
+                                    <a className={isActive('/aboutUs') ? 'text-primary font-bold' : ''}>About Us</a>
                                 </Link>
                             </li>
                         </ul>
                     </div>
                     <Link href="/" legacyBehavior>
-                        <a className="btn btn-ghost text-xl">kinnun.com</a>
+                        <div className='flex'>
+                            <a className="btn btn-ghost text-xl">kinnun.com</a>
+                            {/* <Image className='w-20' src= {imageLogo} /> */}
+
+                        </div>
                     </Link>
                 </div>
 
@@ -109,6 +116,12 @@ const Navbar = () => {
                             </Link>
                         </li>
                     </ul>
+                </div>
+                <div className='navbar-end'>
+                    <div className='flex items-center'>
+                        <BsCart3 className='text-2xl' />
+                        <p className='text-red-500'>+0</p>
+                    </div>
                 </div>
             </div>
         </div>
