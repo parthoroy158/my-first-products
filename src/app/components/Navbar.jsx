@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BsCart3 } from "react-icons/bs";
@@ -8,6 +8,19 @@ import imageLogo from '../../../public/logo sticker (1).png'
 
 const Navbar = () => {
     const pathname = usePathname();
+    const [cartItems, setCartItems] = useState([]);
+
+    useEffect(() => {
+        const fetchCart = () => {
+            const storedCart = JSON.parse(localStorage.getItem('cart') || '[]');
+            setCartItems(storedCart);
+        };
+
+        fetchCart(); 
+        window.addEventListener('cartUpdated', fetchCart);
+
+        return () => window.removeEventListener('cartUpdated', fetchCart);
+    }, []);
 
     const isActive = (href) => pathname === href;
 
@@ -58,7 +71,7 @@ const Navbar = () => {
                                 </a>
                                 <ul className="p-2">
                                     <li>
-                                        <Link href="/products/cable-protective" legacyBehavior>
+                                        <Link href="/cable-protective" legacyBehavior>
                                             <a>Cable Protective</a>
                                         </Link>
                                     </li>
@@ -98,7 +111,7 @@ const Navbar = () => {
                                 <summary>Items</summary>
                                 <ul className="p-2 dark:bg-white bg-base-100 w-45 ">
                                     <li className='w-full'>
-                                        <Link href="/products/cable-protective" legacyBehavior>
+                                        <Link href="/cable-protective" legacyBehavior>
                                             <a>Cable Protective</a>
                                         </Link>
                                     </li>
@@ -118,10 +131,14 @@ const Navbar = () => {
                     </ul>
                 </div>
                 <div className='navbar-end'>
-                    <div className='flex items-center'>
-                        <BsCart3 className='text-2xl' />
-                        <p className='text-red-500'>+0</p>
-                    </div>
+                    <Link href='/cart'>
+                        <div className='flex items-center'>
+
+                            <BsCart3 className='text-2xl' />
+                            <p className='text-red-500'>+{cartItems.length}</p>
+
+                        </div>
+                    </Link>
                 </div>
             </div>
         </div>

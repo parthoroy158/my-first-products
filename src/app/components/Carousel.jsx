@@ -11,7 +11,7 @@ const slides = [
         alt: 'Slide 2',
     },
     {
-        src: 'https://i.ibb.co/SL4B6qH/Bag-1.gif',
+        src: 'https://i.ibb.co/691xYQS/item-3.png',
         alt: 'Slide 3',
     },
     {
@@ -45,8 +45,8 @@ const Carousel = () => {
     };
 
     return (
-        <div className='bg-white dark:bg-white '> 
-            <div className="relative w-full h-[250px] sm:h-[350px] md:h-[500px] lg:h-[600px] overflow-hidden mt-16 rounded-xl pt-16 shadow-2xl">
+        <div> 
+            <div className="relative w-full h-[250px] sm:h-[350px] md:h-[500px] lg:h-[600px] overflow-hidden mt-16 md:rounded-xl rounded-b-2xl  pt-16 shadow-2xl">
                 {/* Slides */}
                 {slides.map((slide, index) => (
                     <div
