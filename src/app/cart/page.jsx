@@ -50,11 +50,13 @@ const CartPage = () => {
     const handleOrder = async (e) => {
         e.preventDefault();
 
+        // 1. Check if the cart is empty
         if (cartItems.length === 0) {
             toast.error('🛒 Your cart is empty!');
             return;
         }
 
+        // 2. Prepare the order data
         const orderData = {
             customer: form,
             cartItems,
@@ -66,6 +68,7 @@ const CartPage = () => {
         };
 
         try {
+            // 3. Make the API request
             const res = await fetch('https://my-first-products.vercel.app/api/carts', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -73,20 +76,28 @@ const CartPage = () => {
             });
 
             const data = await res.json();
-            console.log("This is the client side data:", data)
+            console.log("📦 Order Response:", data);
 
-            if (res.ok) {
-                toast.success(`Order placed! Order ID: ${data._id}`);
+            // 4. Handle success response
+            if (data?.data?.acknowledged) {
+                toast.success(" Order Confirmed");
                 clearCart();
-                router.push(`/confirmOrder/${data._id}`);
+                if (data?.data?.insertedId) {
+                    console.log("🆔 Inserted Order ID:", data?.data?.insertedId);
+                  
+                    router.push(`/confirmOrder/${data?.data?.insertedId}`);
+                }
             } else {
                 toast.error(`❌ Failed to place order: ${data.message || 'Unknown error'}`);
             }
         } catch (error) {
-            console.error('Order Error:', error);
+            // 5. Handle request errors
+            console.error('🚨 Order Error:', error);
             toast.error('Something went wrong while placing the order.');
         }
     };
+
+
 
 
     return (

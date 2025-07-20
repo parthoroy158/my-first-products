@@ -1,73 +1,100 @@
 import dbConnect, { collectionObj } from '@/lib/dbConnect';
 import { ObjectId } from 'mongodb';
+import Image from 'next/image';
 import React from 'react';
 
-const page = async ({ params }) => {
-    const id = await params.id
-    console.log("This is the params:", id)
-    const db = dbConnect(collectionObj.cart_info)
-    const res = await db.findOne({ _id: new ObjectId(id) })
-    console.log("This is the res", res)
-    const order = await res?.orderData;
-    console.log("This is the order", order)
+export const dynamic = 'force-dynamic'; // Ensures fresh data on each request
+
+const OrderConfirmPage = async ({ params }) => {
+    const id = params.id;
+    const db = await dbConnect(collectionObj.cart_info);
+    const res = await db.findOne({ _id: new ObjectId(id) });
+
+    if (!res) {
+        return (
+            <div className="flex items-center justify-center h-screen text-red-500 font-semibold text-xl">
+                ❌ Order not found.
+            </div>
+        );
+    }
+
+    const { customer, cartItems, totalAmount, createdAt, orderStatus, paymentStatus, paymentMethod } = res;
 
     return (
-        <div className="w-full py-12 px-4 bg-gradient-to-br from-gray-50 to-white min-h-screen">
-            <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-xl p-8 border border-gray-200">
-                {/* Header */}
-                <div className="mb-8 border-b pb-6 flex justify-between items-start">
-                    <div>
-                        <h1 className="text-3xl font-extrabold text-green-700">✅ Order Confirmed</h1>
-                        <p className="text-sm text-gray-500 mt-1">Thank you for your purchase!</p>
-                    </div>
-                    <div className="text-right">
-                        <p className="text-xs text-gray-400">Order ID</p>
-                        <p className="font-mono text-sm bg-gray-100 dark:text-black px-2 py-1 rounded">{id}</p>
-                    </div>
-                </div>
+        <div className="max-w-5xl mx-auto px-6 py-14 mt-16 min-h-screen text-gray-800 dark:text-black bg-gradient-to-br from-white to-slate-50 rounded-3xl shadow-sm">
+            <h1 className="text-4xl font-bold mb-10 text-center text-gray-700">✨ Order Confirmed</h1>
 
-                {/* Customer Info */}
-                <div className="mb-6">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-2">👤 Customer Information</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700">
-                        <p><strong>Name:</strong> {order?.customer?.name}</p>
-                        <p><strong>Email:</strong> {order?.customer?.email}</p>
-                        <p><strong>Phone:</strong> {order?.customer?.phone}</p>
-                        <p><strong>Address:</strong> {order?.customer?.address}</p>
-                    </div>
+            {/* Customer Info */}
+            <div className="bg-white shadow rounded-2xl p-6 mb-8 border border-gray-100">
+                <h2 className="text-xl font-semibold mb-4 text-gray-700">👤 Customer Information</h2>
+                <div className="grid sm:grid-cols-2 gap-4 text-gray-600">
+                    <p><span className="font-medium">Name:</span> {customer.name}</p>
+                    <p><span className="font-medium">Email:</span> {customer.email}</p>
+                    <p><span className="font-medium">Phone:</span> {customer.phone}</p>
+                    <p><span className="font-medium">Address:</span> {customer.address}</p>
                 </div>
+            </div>
 
-                {/* Items */}
-                <div className="mb-6">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-2">📦 Order Items</h2>
-                    <div className="space-y-4">
-                        {order?.cartItems?.map((item, index) => (
-                            <div key={index} className="flex items-center gap-4 p-4 border rounded-md bg-gray-50">
-                                <img src={item.image} alt={item.product_name} className="w-16 h-16 object-cover rounded-md border" />
-                                <div>
-                                    <p className="font-medium text-gray-900">{item.product_name}</p>
-                                    <p className="text-sm text-gray-600">Price: {item.price} {item.currency}</p>
-                                    <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
-                                </div>
+            {/* Products List */}
+            <div className="bg-white shadow rounded-2xl p-6 mb-8 border border-gray-100">
+                <h2 className="text-xl font-semibold mb-4 text-gray-700">🛍️ Product Details</h2>
+                <div className="space-y-6">
+                    {cartItems?.map((item) => (
+                        <div key={item.id} className="flex flex-col sm:flex-row items-start gap-6 bg-slate-50 rounded-xl p-4 border border-gray-100">
+                            <img
+                                src={item.image}
+                                alt={item.product_name}
+                                width={100}
+                                height={100}
+                                className="rounded-lg border object-cover shadow-sm"
+                            />
+                            <div className="space-y-1">
+                                <p className="text-lg font-medium text-gray-700">{item.product_name}</p>
+                                <p className="text-gray-600">Quantity: {item.quantity}</p>
+                                <p className="text-gray-600">Price: {item.price} {item.currency}</p>
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    ))}
                 </div>
+            </div>
 
-                {/* Summary */}
-                <div className="border-t pt-6 mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700">
-                    <p><strong>Total:</strong> {order?.totalAmount} {order?.cartItems?.[0]?.currency || 'BDT'}</p>
-                    <p><strong>Status:</strong> <span className="capitalize">{order?.orderStatus}</span></p>
-                    <p><strong>Payment:</strong> <span className="capitalize">{order?.paymentStatus}</span> ({order?.paymentMethod})</p>
-                    <p><strong>Date:</strong> {new Date(order?.createdAt).toLocaleString()}</p>
+            {/* Summary and Status */}
+            <div className="bg-white shadow rounded-2xl p-6 mb-8 border border-gray-100">
+                <h2 className="text-xl font-semibold mb-4 text-gray-700">📋 Order Summary</h2>
+                <div className="grid sm:grid-cols-2 gap-4 text-gray-600 text-base">
+                    <p><strong>Total:</strong> {totalAmount} BDT</p>
+                    <p><strong>Payment Method:</strong> {paymentMethod}</p>
+                    <p>
+                        <strong>Payment Status:</strong>{' '}
+                        <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${paymentStatus === 'paid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                            }`}>
+                            {paymentStatus === 'paid' ? '✅ Paid' : '❌ Unpaid'}
+                        </span>
+                    </p>
+                    <p>
+                        <strong>Order Status:</strong>{' '}
+                        <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${orderStatus === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'
+                            }`}>
+                            {orderStatus === 'pending' ? '⏳ Pending' : '✔️ Confirmed'}
+                        </span>
+                    </p>
                 </div>
-
-                {/* Footer Button */}
-                
+                <p className="text-sm text-gray-400 mt-4">
+                    📅 Placed on: {new Date(createdAt).toLocaleString("en-BD", {
+                        timeZone: "Asia/Dhaka",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true
+                    })}
+                </p>
             </div>
         </div>
+
 
     );
 };
 
-export default page;
+export default OrderConfirmPage;
