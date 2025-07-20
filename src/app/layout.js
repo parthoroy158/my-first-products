@@ -3,6 +3,8 @@ import "./globals.css";
 import Navbar from "./components/Navbar";
 import FooterForAll from "./components/FooterForAll";
 import { Toaster } from "react-hot-toast";
+import { Analytics } from "@vercel/analytics/next"
+
 
 
 
@@ -30,6 +32,7 @@ export default function RootLayout({ children }) {
         <Navbar></Navbar>
         {children}
         <Toaster />
+         <Analytics />
      <FooterForAll></FooterForAll>
       </body>
       
