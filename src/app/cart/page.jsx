@@ -84,6 +84,7 @@ const CartPage = () => {
                 clearCart();
                 if (data?.data?.insertedId) {
                     console.log("🆔 Inserted Order ID:", data?.data?.insertedId);
+                    localStorage.setItem("Order_Id", data?.data?.insertedId )
                   
                     router.push(`/confirmOrder/${data?.data?.insertedId}`);
                 }

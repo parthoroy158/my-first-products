@@ -22,7 +22,12 @@ const OrderConfirmPage = async ({ params }) => {
 
     return (
         <div className="max-w-5xl mx-auto px-6 py-14 mt-16 min-h-screen text-gray-800 dark:text-black bg-gradient-to-br from-white to-slate-50 rounded-3xl shadow-sm">
-            <h1 className="text-4xl font-bold mb-10 text-center text-gray-700">✨ Order Confirmed</h1>
+            <div className="flex items-center justify-between w-full mb-15">
+                <h1 className="text-4xl font-bold text-gray-700 text-center w-full">✨ Order Confirmed</h1>
+                <div className="w-full flex justify-end">
+                    <button className="text-red-500 font-medium">Delete Order</button>
+                </div>
+            </div>
 
             {/* Customer Info */}
             <div className="bg-white shadow rounded-2xl p-6 mb-8 border border-gray-100">
@@ -91,6 +96,7 @@ const OrderConfirmPage = async ({ params }) => {
                     })}
                 </p>
             </div>
+
         </div>
 
 
