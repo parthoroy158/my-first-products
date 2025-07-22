@@ -6,8 +6,10 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
+
 const CartPage = () => {
     const [cartItems, setCartItems] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [form, setForm] = useState({
         name: '',
         email: '',
@@ -26,7 +28,6 @@ const CartPage = () => {
         localStorage.removeItem('cart');
         localStorage.removeItem('cartTotal');
         setCartItems([]);
-        toast.success('🧹 Cart cleared');
     };
 
     useEffect(() => {
@@ -73,7 +74,7 @@ const CartPage = () => {
             toast.error('🛒 Your cart is empty!');
             return;
         }
-
+        setLoading(true)
         const orderData = {
             customer: form,
             cartItems,
@@ -157,15 +158,15 @@ const CartPage = () => {
                                         <div className="flex items-center gap-2 mt-1">
                                             <button
                                                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                                className="bg-gray-200 px-2 rounded text-lg font-bold hover:bg-gray-300"
+                                                className="bg-gray-200 px-2 rounded text-lg font-bold hover:bg-gray-300 dark:bg-black"
                                                 disabled={item.quantity <= 1}
                                             >
                                                 –
                                             </button>
-                                            <span className="px-2">{item.quantity}</span>
+                                            <span className="px-2 dark:text-black">{item.quantity}</span>
                                             <button
                                                 onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                className="bg-gray-200 px-2 rounded text-lg font-bold hover:bg-gray-300"
+                                                className="bg-gray-200 px-2 rounded text-lg font-bold hover:bg-gray-300 dark:bg-black"
                                             >
                                                 +
                                             </button>
@@ -181,10 +182,13 @@ const CartPage = () => {
                                     </p>
                                     <button
                                         onClick={() => removeItem(item.id)}
-                                        className="text-sm text-red-500 hover:text-red-700"
+                                        className="flex items-center gap-2 px-4 py-2 text-sm md:text-base font-medium text-red-600 bg-red-100 border border-red-200 rounded-full transition-all duration-200 hover:bg-red-600 hover:text-white hover:shadow-lg active:scale-95"
                                     >
-                                        🗑 Remove
+                                        <BsTrash3Fill  className="w-5 h-5" />
+                                        <span className="hidden sm:inline">Remove</span>
                                     </button>
+
+
                                 </div>
                             </div>
                         ))}
@@ -261,9 +265,22 @@ const CartPage = () => {
 
                             <button
                                 type="submit"
-                                className="w-full mt-4 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-base md:text-lg font-medium px-5 md:px-6 py-3 rounded-full shadow-md transition hover:scale-105"
+                                disabled={loading}
+                                className={`w-full mt-4 flex items-center justify-center gap-2 text-white text-base md:text-lg font-medium px-5 md:px-6 py-3 rounded-full shadow-md transition hover:scale-105 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'}`}
                             >
-                                🧾 <span>Place Order & Pay</span>
+                                {loading ? (
+                                    <span className="flex gap-2 items-center">
+                                        <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                                        </svg>
+                                        Placing Order...
+                                    </span>
+                                ) : (
+                                    <>
+                                        🧾 <span>Place Order & Pay</span>
+                                    </>
+                                )}
                             </button>
                         </form>
                     </div>

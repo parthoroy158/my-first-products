@@ -11,8 +11,8 @@ const StartNow = () => {
     }
 
     return (
-        <div className='w-full'>
-            <div className='max-w-7xl mx-auto mt-15 bg-blue-100 md:h-35  rounded-2xl'>
+        <div className='w-full mb-5 pt-1'>
+            <div className='max-w-7xl mx-auto mt-5 bg-blue-100 md:h-35  rounded-2xl'>
                 <div className='md:flex justify-between p-10 items-center'>
                     <div>
                         <p className='font-bold text-2xl'>Shop Happy — Safe Payments</p>  <p className='mb-5'>On-Time Deliveries</p>

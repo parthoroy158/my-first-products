@@ -31,6 +31,7 @@ import image25 from '../../../public/25.jpg';
 import image26 from '../../../public/26.jpg';
 import image27 from '../../../public/27.jpg';
 import toast from 'react-hot-toast';
+import StartNow from '../components/StartNow';
 
 const page = () => {
     const items = [
@@ -582,17 +583,20 @@ const page = () => {
 
     return (
         <div className="max-w-7xl mx-auto mt-16 min-h-screen px-4 dark:text-black mb-15">
+            <StartNow></StartNow>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 ">
                 {items.map((item) => (
                     <div key={item.id} className="card h-full flex flex-col bg-white hover:shadow-lg hover:scale-105 transition-transform duration-300 rounded-lg border border-gray-200">
                         <figure className="relative w-full h-36 md:h-40">
-                            <Image
-                                src={item.image}
-                                alt={item.product_name || "Product image"}
-                                fill
-                                className="object-cover rounded-t-lg"
-                                priority
-                            />
+                            <Link href={`/cable-protective/${item.id}`}>
+                                <Image
+                                    src={item.image}
+                                    alt={item.product_name || "Product image"}
+                                    fill
+                                    className="object-cover rounded-t-lg"
+                                    priority
+                                />
+                            </Link>
                         </figure>
 
                         <div className="card-body px-3 py-2 flex flex-col justify-between flex-1">
@@ -614,7 +618,7 @@ const page = () => {
                             </Link>
 
                             <div className="card-actions mt-2 flex-wrap gap-2 justify-between items-center">
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 items-center">
                                     <div className="badge bg-pink-100 text-pink-600 badge-xs">{item.winder_style}</div>
                                     <div className={`badge badge-xs ${item.stock === "In Stock" ? "bg-green-100 text-green-600" : "bg-pink-100 text-pink-600"}`}>
                                         {item.stock}
