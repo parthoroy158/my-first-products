@@ -9,7 +9,7 @@ export default function Home() {
 
   return (
     <div className="w-full bg-[#F5F5F5] text-[#1A1A1A] min-h-screen">
-      <div className="max-w-7xl mx-auto min-h-screen dark:text-black">
+      <div className="max-w-7xl mx-auto min-h-screen dark:text-black pr-5 pl-5">
         <Carousel />
         <StartNow />
         <BrowseByCategory />

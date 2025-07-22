@@ -51,12 +51,12 @@ const Navbar = () => {
                                 <details>
                                     <summary>Items</summary>
                                     <ul className="p-2">
-                                        <li>
+                                        <li className='w-full'>
                                             <Link href="/cable-protective">Cable Protective</Link>
                                         </li>
-                                        <li>
+                                        {/* <li>
                                             <Link href="/products/submenu-2">Added Soon More</Link>
-                                        </li>
+                                        </li> */}
                                     </ul>
                                 </details>
                             </li>
@@ -71,8 +71,8 @@ const Navbar = () => {
                         </ul>
                     </div>
                     <Link href="/" className="flex items-center gap-2">
-                        <Image src={imageLogo} alt="Logo" width={40} height={40} />
-                        <span className="btn btn-ghost text-xl">kinnun.com</span>
+                        {/* <Image src={imageLogo} alt="Logo" width={40} height={40} /> */}
+                        <span className="text-xl">kinnun.com</span>
                     </Link>
                 </div>
 
@@ -86,12 +86,12 @@ const Navbar = () => {
                             <details>
                                 <summary>Items</summary>
                                 <ul className="p-2 bg-base-100 dark:bg-white">
-                                    <li>
+                                    <li className='w-35'>
                                         <Link href="/cable-protective">Cable Protective</Link>
                                     </li>
-                                    <li>
+                                    {/* <li>
                                         <Link href="/products/submenu-2">Submenu 2</Link>
-                                    </li>
+                                    </li> */}
                                 </ul>
                             </details>
                         </li>

@@ -7,6 +7,7 @@ import image3 from '../../../public/3.jpg';
 import image4 from '../../../public/4.jpg';
 import image5 from '../../../public/5.jpg';
 import image6 from '../../../public/6.jpg';
+
 import Link from 'next/link';
 
 const Collections = () => {
@@ -105,7 +106,8 @@ const Collections = () => {
             cross_border_special_supply: false,
             product_features: "Cartoon",
             stock: "In Stock"
-        }
+        },
+        
     ];
 
 

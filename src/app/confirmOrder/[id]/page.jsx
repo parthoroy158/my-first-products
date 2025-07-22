@@ -1,3 +1,5 @@
+
+import Delete from '@/app/action/Delete';
 import dbConnect, { collectionObj } from '@/lib/dbConnect';
 import { ObjectId } from 'mongodb';
 import Image from 'next/image';
@@ -7,10 +9,12 @@ export const dynamic = 'force-dynamic'; // Ensures fresh data on each request
 
 const OrderConfirmPage = async ({ params }) => {
     const id = params.id;
-    const db = await dbConnect(collectionObj.cart_info);
-    const res = await db.findOne({ _id: new ObjectId(id) });
 
-    if (!res) {
+    // Connect to MongoDB and fetch order
+    const db = await dbConnect(collectionObj.cart_info);
+    const order = await db.findOne({ _id: new ObjectId(id) });
+
+    if (!order) {
         return (
             <div className="flex items-center justify-center h-screen text-red-500 font-semibold text-xl">
                 ❌ Order not found.
@@ -18,19 +22,28 @@ const OrderConfirmPage = async ({ params }) => {
         );
     }
 
-    const { customer, cartItems, totalAmount, createdAt, orderStatus, paymentStatus, paymentMethod } = res;
-
+    const {
+        customer,
+        cartItems,
+        totalAmount,
+        createdAt,
+        orderStatus,
+        paymentStatus,
+        paymentMethod,
+    } = order;
+  
     return (
         <div className="max-w-5xl mx-auto px-6 py-14 mt-16 min-h-screen text-gray-800 dark:text-black bg-gradient-to-br from-white to-slate-50 rounded-3xl shadow-sm">
-            <div className="flex items-center justify-between w-full mb-15">
-                <h1 className="text-4xl font-bold text-gray-700 text-center w-full">✨ Order Confirmed</h1>
-                <div className="w-full flex justify-end">
-                    <button className="text-red-500 font-medium">Delete Order</button>
-                </div>
+            <div className="flex flex-col md:flex-row items-center justify-between w-full mb-10 gap-4">
+                <h1 className="text-4xl font-bold text-gray-700 text-center w-full">
+                    ✨ Order Confirmed
+                </h1>
+                {/* <button className="text-red-500 font-medium hover:underline w-30" >Delete Order</button> */}
+                <Delete></Delete>
             </div>
 
             {/* Customer Info */}
-            <div className="bg-white shadow rounded-2xl p-6 mb-8 border border-gray-100">
+            <section className="bg-white shadow rounded-2xl p-6 mb-8 border border-gray-100">
                 <h2 className="text-xl font-semibold mb-4 text-gray-700">👤 Customer Information</h2>
                 <div className="grid sm:grid-cols-2 gap-4 text-gray-600">
                     <p><span className="font-medium">Name:</span> {customer.name}</p>
@@ -38,15 +51,18 @@ const OrderConfirmPage = async ({ params }) => {
                     <p><span className="font-medium">Phone:</span> {customer.phone}</p>
                     <p><span className="font-medium">Address:</span> {customer.address}</p>
                 </div>
-            </div>
+            </section>
 
             {/* Products List */}
-            <div className="bg-white shadow rounded-2xl p-6 mb-8 border border-gray-100">
+            <section className="bg-white shadow rounded-2xl p-6 mb-8 border border-gray-100">
                 <h2 className="text-xl font-semibold mb-4 text-gray-700">🛍️ Product Details</h2>
                 <div className="space-y-6">
                     {cartItems?.map((item) => (
-                        <div key={item.id} className="flex flex-col sm:flex-row items-start gap-6 bg-slate-50 rounded-xl p-4 border border-gray-100">
-                            <img
+                        <div
+                            key={item.id}
+                            className="flex flex-col sm:flex-row items-start gap-6 bg-slate-50 rounded-xl p-4 border border-gray-100"
+                        >
+                            <Image
                                 src={item.image}
                                 alt={item.product_name}
                                 width={100}
@@ -61,10 +77,10 @@ const OrderConfirmPage = async ({ params }) => {
                         </div>
                     ))}
                 </div>
-            </div>
+            </section>
 
             {/* Summary and Status */}
-            <div className="bg-white shadow rounded-2xl p-6 mb-8 border border-gray-100">
+            <section className="bg-white shadow rounded-2xl p-6 border border-gray-100">
                 <h2 className="text-xl font-semibold mb-4 text-gray-700">📋 Order Summary</h2>
                 <div className="grid sm:grid-cols-2 gap-4 text-gray-600 text-base">
                     <p><strong>Total:</strong> {totalAmount} BDT</p>
@@ -95,11 +111,8 @@ const OrderConfirmPage = async ({ params }) => {
                         hour12: true
                     })}
                 </p>
-            </div>
-
+            </section>
         </div>
-
-
     );
 };
 

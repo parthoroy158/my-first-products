@@ -16,6 +16,7 @@ const CartPage = () => {
     });
     const router = useRouter();
 
+    // Load cart from localStorage
     const fetchCart = () => {
         const storedCart = JSON.parse(localStorage.getItem('cart') || '[]');
         setCartItems(storedCart);
@@ -25,6 +26,7 @@ const CartPage = () => {
         localStorage.removeItem('cart');
         localStorage.removeItem('cartTotal');
         setCartItems([]);
+        toast.success('🧹 Cart cleared');
     };
 
     useEffect(() => {
@@ -47,16 +49,31 @@ const CartPage = () => {
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
+    const updateQuantity = (id, newQty) => {
+        const updatedCart = cartItems.map(item =>
+            item.id === id ? { ...item, quantity: Math.max(newQty, 1) } : item
+        );
+        setCartItems(updatedCart);
+        localStorage.setItem('cart', JSON.stringify(updatedCart));
+        window.dispatchEvent(new Event('cartUpdated'));
+    };
+
+    const removeItem = (id) => {
+        const updatedCart = cartItems.filter(item => item.id !== id);
+        setCartItems(updatedCart);
+        localStorage.setItem('cart', JSON.stringify(updatedCart));
+        window.dispatchEvent(new Event('cartUpdated'));
+        toast.success('🗑 Item removed');
+    };
+
     const handleOrder = async (e) => {
         e.preventDefault();
 
-        // 1. Check if the cart is empty
         if (cartItems.length === 0) {
             toast.error('🛒 Your cart is empty!');
             return;
         }
 
-        // 2. Prepare the order data
         const orderData = {
             customer: form,
             cartItems,
@@ -68,7 +85,6 @@ const CartPage = () => {
         };
 
         try {
-            // 3. Make the API request
             const res = await fetch('https://my-first-products.vercel.app/api/carts', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -76,34 +92,24 @@ const CartPage = () => {
             });
 
             const data = await res.json();
-            console.log("📦 Order Response:", data);
-
-            // 4. Handle success response
             if (data?.data?.acknowledged) {
-                toast.success(" Order Confirmed");
+                toast.success("Order Confirmed");
                 clearCart();
                 if (data?.data?.insertedId) {
-                    console.log("🆔 Inserted Order ID:", data?.data?.insertedId);
-                    localStorage.setItem("Order_Id", data?.data?.insertedId )
-                  
+                    localStorage.setItem("Order_Id", data?.data?.insertedId);
                     router.push(`/confirmOrder/${data?.data?.insertedId}`);
                 }
             } else {
-                toast.error(`❌ Failed to place order: ${data.message || 'Unknown error'}`);
+                toast.error(`❌ Order failed: ${data.message || 'Unknown error'}`);
             }
         } catch (error) {
-            // 5. Handle request errors
             console.error('🚨 Order Error:', error);
             toast.error('Something went wrong while placing the order.');
         }
     };
 
-
-
-
     return (
         <div className="max-w-6xl mx-auto px-4 py-12 mt-10 min-h-screen">
-            {/* Header */}
             <div className="flex justify-between items-center mb-6 border-b pb-4">
                 <h1 className="text-3xl font-bold text-gray-800">🛒 Your Cart</h1>
                 {cartItems.length > 0 && (
@@ -116,7 +122,6 @@ const CartPage = () => {
                 )}
             </div>
 
-            {/* Cart Items */}
             {cartItems.length === 0 ? (
                 <div className="text-center text-gray-500 mt-10">
                     <p className="text-lg">Your cart is currently empty.</p>
@@ -134,6 +139,7 @@ const CartPage = () => {
                                 key={item.id}
                                 className="flex items-center justify-between p-4 bg-white shadow-sm rounded-lg border"
                             >
+                                {/* Left */}
                                 <div className="flex items-center gap-4">
                                     <Image
                                         src={item.image}
@@ -142,34 +148,67 @@ const CartPage = () => {
                                         height={80}
                                         className="rounded-md object-cover"
                                     />
-                                    <Link href={`/cable-protective/${item.id}`} className="hover:underline">
-                                        <div>
+
+                                    <div>
+                                        <Link href={`/cable-protective/${item.id}`} className="hover:underline">
                                             <h2 className="text-lg font-semibold text-gray-800">{item.product_name}</h2>
-                                            <p className="text-sm text-gray-500">Price: {item.price} {item.currency}</p>
-                                            <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
+                                        </Link>
+                                        <p className="text-sm text-gray-500">Price: {item.price} {item.currency}</p>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <button
+                                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                className="bg-gray-200 px-2 rounded text-lg font-bold hover:bg-gray-300"
+                                                disabled={item.quantity <= 1}
+                                            >
+                                                –
+                                            </button>
+                                            <span className="px-2">{item.quantity}</span>
+                                            <button
+                                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                className="bg-gray-200 px-2 rounded text-lg font-bold hover:bg-gray-300"
+                                            >
+                                                +
+                                            </button>
                                         </div>
-                                    </Link>
+                                    </div>
+
                                 </div>
-                                <div className="text-right font-semibold text-sky-600">
-                                    {(item.price * item.quantity).toFixed(2)} {item.currency}
+
+                                {/* Right */}
+                                <div className="text-right flex flex-col items-end gap-2">
+                                    <p className="font-semibold text-sky-600">
+                                        {(item.price * item.quantity).toFixed(2)} {item.currency}
+                                    </p>
+                                    <button
+                                        onClick={() => removeItem(item.id)}
+                                        className="text-sm text-red-500 hover:text-red-700"
+                                    >
+                                        🗑 Remove
+                                    </button>
                                 </div>
                             </div>
                         ))}
 
                         <div className="border-t pt-4 mt-6 text-right">
                             <p className="text-lg font-semibold text-gray-700">
-                                Total Amount: <span className="text-indigo-600">{totalAmount.toFixed(2)} {cartItems[0]?.currency || 'BDT'}</span>
+                                Total Amount:{' '}
+                                <span className="text-indigo-600">
+                                    {totalAmount.toFixed(2)} {cartItems[0]?.currency || 'BDT'}
+                                </span>
                             </p>
                         </div>
                     </div>
 
-                    {/* Shipping Form */}
+                    {/* Order Form */}
                     <div className="flex justify-end mt-10">
-                        <form onSubmit={handleOrder} className="w-full max-w-full bg-white p-6 rounded-2xl shadow-lg space-y-4 border dark:text-black">
+                        <form
+                            onSubmit={handleOrder}
+                            className="w-full max-w-full bg-white p-6 rounded-2xl shadow-lg space-y-4 border dark:text-black"
+                        >
                             <h2 className="text-xl font-bold text-gray-800 mb-4">📦 Shipping Details</h2>
 
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-600 ">Full Name</label>
+                                <label className="block text-sm font-medium text-gray-600">Full Name</label>
                                 <input
                                     type="text"
                                     name="name"
@@ -177,12 +216,12 @@ const CartPage = () => {
                                     onChange={handleInputChange}
                                     required
                                     placeholder="Enter your full name"
-                                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-black"
+                                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                                 />
                             </div>
 
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-600 dark:text-black">Email</label>
+                                <label className="block text-sm font-medium text-gray-600">Email</label>
                                 <input
                                     type="email"
                                     name="email"
@@ -202,7 +241,7 @@ const CartPage = () => {
                                     value={form.phone}
                                     onChange={handleInputChange}
                                     required
-                                    placeholder="e.g. +8801738579393, 017334036556 Add more Numbers"
+                                    placeholder="e.g. 017XXXXXXXX"
                                     className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                                 />
                             </div>
