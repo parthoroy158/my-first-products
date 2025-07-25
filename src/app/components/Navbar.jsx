@@ -1,11 +1,14 @@
 'use client';
+import logo from '../../../public/ChatGPT Image Jul 24, 2025, 11_10_12 AM.png'
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BsCart3 } from "react-icons/bs";
 import Image from 'next/image';
-import imageLogo from '../../../public/logo sticker (1).png';
+
+
+
 
 const Navbar = () => {
     const pathname = usePathname();
@@ -63,6 +66,9 @@ const Navbar = () => {
                             <li>
                                 <Link href="/aboutUs" className={isActive('/aboutUs') ? 'text-primary font-bold' : ''}>About Us</Link>
                             </li>
+                            <li>
+                                <Link href="/contactUs" className={isActive('/contactUs') ? 'text-primary font-bold' : ''}>Contact Us</Link>
+                            </li>
                             {orderId && (
                                 <li>
                                     <Link href={`/confirmOrder/${orderId}`} className={isActive(`/confirmOrder/${orderId}`) ? 'text-primary font-bold' : ''}>My Order</Link>
@@ -71,8 +77,14 @@ const Navbar = () => {
                         </ul>
                     </div>
                     <Link href="/" className="flex items-center gap-2">
-                        {/* <Image src={imageLogo} alt="Logo" width={40} height={40} /> */}
-                        <span className="text-xl">kinnun.com</span>
+                        <Image src={logo} alt="Logo" width={50} height={40} />
+                        <div className="text-center">
+                            {/* <img src={logo} alt="" /> */}
+                           
+                            <h1 className="text-xl font-extrabold text-green-700 tracking-tight">
+                                {/* কিনুন<span className="text-gray-500"></span> */}
+                            </h1>
+                        </div>
                     </Link>
                 </div>
 
@@ -98,6 +110,9 @@ const Navbar = () => {
                         <li>
                             <Link href="/aboutUs" className={isActive('/aboutUs') ? 'text-primary font-bold' : ''}>About Us</Link>
                         </li>
+                        <li>
+                            <Link href="/contactUs" className={isActive('/contactUs') ? 'text-primary font-bold' : ''}>Contact Us</Link>
+                        </li>
                         {orderId && (
                             <li>
                                 <Link href={`/confirmOrder/${orderId}`} className={isActive(`/confirmOrder/${orderId}`) ? 'text-primary font-bold' : ''}>My Order</Link>
@@ -108,11 +123,23 @@ const Navbar = () => {
 
                 {/* Cart */}
                 <div className="navbar-end">
-                    <Link href="/cart" className="flex items-center gap-1">
-                        <BsCart3 className="text-2xl" />
-                        <span className="text-red-500">+{cartItems.length}</span>
+                    <Link
+                        href="/cart"
+                        className="relative group flex items-center gap-2 px-4 py-2 rounded-full   bg-white/80 hover:border-red-400 hover:bg-white/90 backdrop-blur-md transition-all duration-300  hover:shadow-lg hover:scale-105"
+                    >
+                        <BsCart3 className="text-2xl text-gray-700 group-hover:text-red-500 transition-transform duration-300 group-hover:scale-110" />
+
+                        {/* Premium floating badge */}
+                        {cartItems.length > 0 && (
+                            <span className="absolute -top-1 -right-2 text-[11px] bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-md ring-2 ring-white">
+                                {cartItems.length}
+                            </span>
+                        )}
                     </Link>
                 </div>
+
+
+
 
             </div>
         </div>
